@@ -41,8 +41,8 @@ typedef struct
 	float texel[2];
 } Vertex;
 
-Vertex vertex[3];
-GLubyte triangles[3];
+Vertex vertex[8];
+GLubyte triangles[36];
 
 /* Variable to hold the VBO identifier and shader data */
 GLuint	index,		//Index to draw
@@ -74,14 +74,16 @@ void Game::initialize()
 	isRunning = true;
 	GLint isCompiled = 0;
 	GLint isLinked = 0;
-
+	glEnable(GL_CULL_FACE);
 	glewInit();
 
 	DEBUG_MSG(glGetString(GL_VENDOR));
 	DEBUG_MSG(glGetString(GL_RENDERER));
 	DEBUG_MSG(glGetString(GL_VERSION));
 
+	
 	/* Vertices counter-clockwise winding */
+	
 	vertex[0].coordinate[0] = -0.5f;
 	vertex[0].coordinate[1] = -0.5f;
 	vertex[0].coordinate[2] = 0.0f;
@@ -93,6 +95,28 @@ void Game::initialize()
 	vertex[2].coordinate[0] = 0.5f;
 	vertex[2].coordinate[1] = 0.5f;
 	vertex[2].coordinate[2] = 0.0f;
+
+	vertex[3].coordinate[0] = 0.5f;
+	vertex[3].coordinate[1] = -0.5f;
+	vertex[3].coordinate[2] = 0.0f;
+
+	vertex[4].coordinate[0] = -0.5f;
+	vertex[4].coordinate[1] = -0.5f;
+	vertex[4].coordinate[2] = 1.0f;
+
+	vertex[5].coordinate[0] = -0.5f;
+	vertex[5].coordinate[1] = 0.5f;
+	vertex[5].coordinate[2] = -1.0f;
+
+	vertex[6].coordinate[0] = 0.5f;
+	vertex[6].coordinate[1] = 0.5f;
+	vertex[6].coordinate[2] = -1.0f;
+
+	vertex[7].coordinate[0] = 0.5f;
+	vertex[7].coordinate[1] = -0.5f;
+	vertex[7].coordinate[2] = -1.0f;
+
+	/* Vertices counter-clockwise winding */
 
 	vertex[0].color[0] = 1.0f;
 	vertex[0].color[1] = 0.0f;
@@ -109,6 +133,23 @@ void Game::initialize()
 	vertex[2].color[2] = 0.0f;
 	vertex[2].color[3] = 0.0f;
 
+
+	vertex[3].color[0] = 1.0f;
+	vertex[3].color[1] = 0.0f;
+	vertex[3].color[2] = 0.0f;
+	vertex[3].color[3] = 1.0f;
+
+	vertex[4].color[0] = 1.0f;
+	vertex[4].color[1] = 0.0f;
+	vertex[4].color[2] = 0.0f;
+	vertex[4].color[3] = 1.0f;
+
+	vertex[5].color[0] = 1.0f;
+	vertex[5].color[1] = 0.0f;
+	vertex[5].color[2] = 0.0f;
+	vertex[5].color[3] = 0.0f;
+
+
 	vertex[0].texel[0] = 0.5f;
 	vertex[0].texel[1] = 0.5f;
 
@@ -118,8 +159,35 @@ void Game::initialize()
 	vertex[2].texel[0] = 1.0f;
 	vertex[2].texel[1] = 0.0f;
 
+	vertex[3].texel[0] = 0.5f;
+	vertex[3].texel[1] = 0.5f;
+
+	vertex[4].texel[0] = 1.0f;
+	vertex[4].texel[1] = 1.0f;
+
+	vertex[5].texel[0] = 1.0f;
+	vertex[5].texel[1] = 0.0f;
+
 	/*Index of Poly / Triangle to Draw */
+	//Front
 	triangles[0] = 0;   triangles[1] = 1;   triangles[2] = 2;
+	triangles[3] = 2;   triangles[4] = 3;   triangles[5] = 0;
+	//Back
+	triangles[6] = 7;   triangles[7] = 6;   triangles[8] = 5;
+	triangles[9] = 5;   triangles[10] = 4;   triangles[11] = 7;
+	//Left
+	triangles[12] = 4;   triangles[13] = 5;   triangles[14] = 1;
+	triangles[15] = 1;   triangles[16] = 0;   triangles[17] = 4;
+	//Right
+	triangles[18] = 3;   triangles[19] = 2;   triangles[20] = 6;
+	triangles[21] = 6;   triangles[22] = 7;   triangles[23] = 3;
+	//Top
+	triangles[24] = 1;   triangles[25] = 5;   triangles[26] = 6;
+	triangles[27] = 6;   triangles[28] = 2;   triangles[29] = 1;
+	//Bottom
+	triangles[30] = 4;   triangles[31] = 0;   triangles[32] = 3;
+	triangles[33] = 3;   triangles[34] = 7;   triangles[35] = 4;
+
 
 	/* Create a new VBO using VBO id */
 	glGenBuffers(1, vbo);
@@ -128,12 +196,12 @@ void Game::initialize()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
 
 	/* Upload vertex data to GPU */
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 9, vertex, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 8, vertex, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glGenBuffers(1, &index);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte) * 3, triangles, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte) * 36, triangles, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	/* Vertex Shader which would normally be loaded from an external file */
@@ -259,7 +327,7 @@ void Game::initialize()
 void Game::update()
 {
 	elapsed = clock.getElapsedTime();
-
+	glCullFace(GL_FRONT);
 	if (elapsed.asSeconds() >= 1.0f)
 	{
 		clock.restart();
@@ -317,7 +385,7 @@ void Game::render()
 
 	/*	As the data positions will be updated by the this program on the
 		CPU bind the updated data to the GPU for drawing	*/
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 3, vertex, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 9, vertex, GL_STATIC_DRAW);
 
 	/*	Draw Triangle from VBO	(set where to start from as VBO can contain
 		model components that 'are' and 'are not' to be drawn )	*/
@@ -337,7 +405,7 @@ void Game::render()
 	glEnableVertexAttribArray(colorID);
 	glEnableVertexAttribArray(texelID);
 
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (char*)NULL + 0);
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, (char*)NULL + 0);
 
 	window.display();
 

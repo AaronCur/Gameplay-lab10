@@ -45,4 +45,9 @@
   <ItemGroup>
     <None Include="..\README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="minecraft.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
