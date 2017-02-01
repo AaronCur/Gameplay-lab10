@@ -60,12 +60,15 @@ GLuint	index,		//Index to draw
 //const string filename = "texture.tga";
 //const string filename = "cube.tga";
 
-const string filename = "texture.tga";
+const string filename = "minecraft.tga";
 
 int width; //width of texture
 int height; //height of texture
 int comp_count; //Component of texture
 const int number = 4; //4 = RGBA
+
+
+
 
 unsigned char* img_data;
 
@@ -81,6 +84,8 @@ void Game::initialize()
 	DEBUG_MSG(glGetString(GL_RENDERER));
 	DEBUG_MSG(glGetString(GL_VERSION));
 
+
+	//Load cube texture
 	
 	/* Vertices counter-clockwise winding */
 	
@@ -117,56 +122,64 @@ void Game::initialize()
 	vertex[7].coordinate[2] = -1.0f;
 
 	/* Vertices counter-clockwise winding */
+///*
+//	vertex[0].color[0] = 1.0f;
+//	vertex[0].color[1] = 0.0f;
+//	vertex[0].color[2] = 0.0f;
+//	vertex[0].color[3] = 1.0f;
+//
+//	vertex[1].color[0] = 1.0f;
+//	vertex[1].color[1] = 0.0f;
+//	vertex[1].color[2] = 0.0f;
+//	vertex[1].color[3] = 1.0f;
+//
+//	vertex[2].color[0] = 1.0f;
+//	vertex[2].color[1] = 0.0f;
+//	vertex[2].color[2] = 0.0f;
+//	vertex[2].color[3] = 0.0f;
+//
+//
+//	vertex[3].color[0] = 1.0f;
+//	vertex[3].color[1] = 0.0f;
+//	vertex[3].color[2] = 0.0f;
+//	vertex[3].color[3] = 1.0f;
+//
+//	vertex[4].color[0] = 1.0f;
+//	vertex[4].color[1] = 0.0f;
+//	vertex[4].color[2] = 0.0f;
+//	vertex[4].color[3] = 1.0f;
+//
+//	vertex[5].color[0] = 1.0f;
+//	vertex[5].color[1] = 0.0f;
+//	vertex[5].color[2] = 0.0f;
+//	vertex[5].color[3] = 0.0f;*/
 
-	vertex[0].color[0] = 1.0f;
-	vertex[0].color[1] = 0.0f;
-	vertex[0].color[2] = 0.0f;
-	vertex[0].color[3] = 1.0f;
 
-	vertex[1].color[0] = 1.0f;
-	vertex[1].color[1] = 0.0f;
-	vertex[1].color[2] = 0.0f;
-	vertex[1].color[3] = 1.0f;
-
-	vertex[2].color[0] = 1.0f;
-	vertex[2].color[1] = 0.0f;
-	vertex[2].color[2] = 0.0f;
-	vertex[2].color[3] = 0.0f;
-
-
-	vertex[3].color[0] = 1.0f;
-	vertex[3].color[1] = 0.0f;
-	vertex[3].color[2] = 0.0f;
-	vertex[3].color[3] = 1.0f;
-
-	vertex[4].color[0] = 1.0f;
-	vertex[4].color[1] = 0.0f;
-	vertex[4].color[2] = 0.0f;
-	vertex[4].color[3] = 1.0f;
-
-	vertex[5].color[0] = 1.0f;
-	vertex[5].color[1] = 0.0f;
-	vertex[5].color[2] = 0.0f;
-	vertex[5].color[3] = 0.0f;
-
-
-	vertex[0].texel[0] = 0.5f;
-	vertex[0].texel[1] = 0.5f;
+	vertex[0].texel[0] = 0.0f;	
+	vertex[0].texel[1] = 0.0f;
 
 	vertex[1].texel[0] = 1.0f;
-	vertex[1].texel[1] = 1.0f;
+	vertex[1].texel[1] = 0.0f;
 
 	vertex[2].texel[0] = 1.0f;
-	vertex[2].texel[1] = 0.0f;
+	vertex[2].texel[1] = 1.0f;
 
-	vertex[3].texel[0] = 0.5f;
-	vertex[3].texel[1] = 0.5f;
+	vertex[3].texel[0] = 0.0f;
+	vertex[3].texel[1] = 1.0f;
 
-	vertex[4].texel[0] = 1.0f;
-	vertex[4].texel[1] = 1.0f;
+	vertex[4].texel[0] = 0.0f;
+	vertex[4].texel[1] = 0.0f;
 
 	vertex[5].texel[0] = 1.0f;
 	vertex[5].texel[1] = 0.0f;
+
+	vertex[6].texel[0] = 1.0f;
+	vertex[6].texel[1] = 1.0f;
+
+	vertex[7].texel[0] = 0.0f;
+	vertex[7].texel[1] = 1.0f;
+
+	
 
 	/*Index of Poly / Triangle to Draw */
 	//Front
@@ -207,12 +220,13 @@ void Game::initialize()
 	/* Vertex Shader which would normally be loaded from an external file */
 	const char* vs_src = "#version 400\n\r"
 		"in vec4 sv_position;"
-		"in vec4 sv_color;"
+		//"in vec4 sv_color;"
 		"in vec2 sv_texel;"
-		"out vec4 color;"
+		//"out vec4 color;"
 		"out vec2 texel;"
 		"void main() {"
-		"	color = sv_color;"
+		//"	color = sv_color;"
+		//"   texel = sv_color"
 		"	texel = sv_texel;"
 		"	gl_Position = sv_position;"
 		"}"; //Vertex Shader Src
@@ -238,12 +252,12 @@ void Game::initialize()
 	/* Fragment Shader which would normally be loaded from an external file */
 	const char* fs_src = "#version 400\n\r"
 		"uniform sampler2D f_texture;"
-		"in vec4 color;"
+		//"in vec4 color;"
 		"in vec2 texel;"
 		"out vec4 fColor;"
 		"void main() {"
 		//"	fColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);"
-		"	fColor = texture(f_texture, texel.st);"
+		"	fColor = texture2D(f_texture, texel);"
 		"}"; //Fragment Shader Src
 
 	DEBUG_MSG("Setting Up Fragment Shader");
@@ -397,12 +411,12 @@ void Game::render()
 	// Set pointers for each parameter
 	// https://www.opengl.org/sdk/docs/man4/html/glVertexAttribPointer.xhtml
 	glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	glVertexAttribPointer(colorID, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+//	glVertexAttribPointer(colorID, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 	glVertexAttribPointer(texelID, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
 	//Enable Arrays
 	glEnableVertexAttribArray(positionID);
-	glEnableVertexAttribArray(colorID);
+	//glEnableVertexAttribArray(colorID);
 	glEnableVertexAttribArray(texelID);
 
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, (char*)NULL + 0);
